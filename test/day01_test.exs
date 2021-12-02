@@ -11,7 +11,7 @@ defmodule Aoc2021.Day01Test do
     end
 
     test "unique input" do
-      input = Utils.read_file("inputs/day01.txt")
+      input = Utils.read_file("inputs/day01.txt") |> Enum.map(&String.to_integer/1)
 
       assert Day01.run_part_one(input) == 1709
     end
@@ -25,7 +25,7 @@ defmodule Aoc2021.Day01Test do
     end
 
     test "unique input" do
-      input = Utils.read_file("inputs/day01.txt")
+      input = Utils.read_file("inputs/day01.txt") |> Enum.map(&String.to_integer/1)
 
       assert Day01.run_part_two(input) == 1761
     end

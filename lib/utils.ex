@@ -5,6 +5,5 @@ defmodule Aoc2021.Utils do
     |> File.read!()
     |> String.trim()
     |> String.split("\n")
-    |> Enum.map(&String.to_integer/1)
   end
 end
