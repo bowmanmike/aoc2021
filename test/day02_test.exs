@@ -23,5 +23,11 @@ defmodule Aoc2021.Day02Test do
 
       assert Day02.part_two(input) == 900
     end
+
+    test "unique input" do
+      input = Utils.read_file("inputs/day02.txt")
+
+      assert Day02.part_two(input) == 1997106066
+    end
   end
 end

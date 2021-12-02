@@ -15,7 +15,7 @@ defmodule Aoc2021.Day02 do
 
   def part_two(input) do
     input
-    |> Enum.reduce(%Position{x: 0, y: 0}, fn elem, acc ->
+    |> Enum.reduce(%Position{x: 0, y: 0, aim: 0}, fn elem, acc ->
       elem
       |> String.split()
       |> adjust_position(acc, :with_aim)
@@ -33,9 +33,16 @@ defmodule Aoc2021.Day02 do
 
   defp adjust_position([word, number], acc, :with_aim) do
     case {word, String.to_integer(number)} do
-      {"forward", num} -> Map.update!(acc, :x, &(&1 + num))
-      {"down", num} -> Map.update!(acc, :y, &(&1 + num))
-      {"up", num} -> Map.update!(acc, :y, &(&1 - num))
+      {"forward", num} ->
+        acc
+        |> Map.update!(:x, &(&1 + num))
+        |> Map.update!(:y, fn val -> val + acc.aim * num end)
+
+      {"down", num} ->
+        Map.update!(acc, :aim, &(&1 + num))
+
+      {"up", num} ->
+        Map.update!(acc, :aim, &(&1 - num))
     end
   end
 
