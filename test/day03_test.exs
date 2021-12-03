@@ -26,7 +26,7 @@ defmodule Aoc2021.Day03Test do
     test "unique input" do
       input = Utils.read_file("inputs/day03.txt")
 
-      assert Day03.part_one(input) == 749376
+      assert Day03.part_one(input) == 749_376
     end
   end
 end
