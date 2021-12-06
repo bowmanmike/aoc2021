@@ -16,9 +16,22 @@ defmodule Aoc2021.Day05 do
         _ -> false
       end)
 
-    require IEx; IEx.pry()
+    # require IEx
+    # IEx.pry()
+
+    Enum.map(parsed_input, fn entry ->
+      generate_list_coords(entry)
+    end)
 
     parsed_input
+  end
+
+  defp generate_list_coords(%Entry{
+         start: %{x: start_x, y: start_y},
+         finish: %{x: end_x, y: end_y}
+       }) do
+    require IEx
+    IEx.pry()
   end
 
   defp setup(input) do
