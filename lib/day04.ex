@@ -2,21 +2,54 @@ defmodule Aoc2021.Day04 do
   @marker "0"
 
   def part_one(input) do
+    {numbers, boards} = setup(input)
+
+    numbers
+    |> Enum.with_index()
+    |> Enum.reduce_while(boards, &handle_number/2)
+  end
+
+  def part_two(input) do
+    {numbers, boards} = setup(input)
+
+    numbers
+    |> Enum.with_index()
+    |> Enum.reduce_while(boards, &handle_part_two/2)
+  end
+
+  defp setup(input) do
     [numbers, boards] = String.split(input, "\n", parts: 2, trim: true)
 
     numbers = parse_numbers(numbers)
     boards = parse_boards(boards)
 
-    numbers
-    |> Enum.with_index()
-    |> Enum.reduce_while(boards, fn input, boards -> handle_number(input, boards) end)
+    {numbers, boards}
   end
 
-  def part_two(input) do
-    input
+  defp handle_part_two({number, index}, boards) when index < 5 do
+    {:cont, mark_board(number, boards)}
   end
 
-  defp handle_number({number, index}, boards) when index < 6 do
+  defp handle_part_two({number, _index}, [_final_board] = boards) do
+    marked_boards = mark_board(number, boards)
+
+    case check_for_winner(marked_boards) do
+      false -> {:cont, boards}
+      true -> {:halt, calc_result(marked_boards, number)}
+    end
+  end
+
+  defp handle_part_two({number, _index}, boards) do
+    marked_boards = mark_board(number, boards)
+    remaining_boards = Enum.reject(marked_boards, fn board -> check_board(board) end)
+
+    case check_for_winner(remaining_boards) do
+      false -> {:cont, remaining_boards}
+      true -> {:halt, calc_result(remaining_boards, number)}
+    end
+  end
+
+  defp handle_number({number, index}, boards) when index < 5 do
     {:cont, mark_board(number, boards)}
   end
 
@@ -43,13 +76,15 @@ defmodule Aoc2021.Day04 do
     sum * String.to_integer(number)
   end
 
-  defp check_for_winner(boards) do
+  def check_for_winner([board]), do: check_board(board)
+
+  def check_for_winner(boards) do
     Enum.any?(boards, fn board ->
       check_board(board)
     end)
   end
 
-  defp check_board(board) do
+  def check_board(board) do
     board
     |> Enum.with_index()
     |> Enum.any?(fn {row, index} ->
