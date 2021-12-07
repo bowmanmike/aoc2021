@@ -7,6 +7,45 @@ defmodule Aoc2021.Day05 do
     defstruct [:x, :y]
   end
 
+  defmodule Grid do
+    defstruct [:grid]
+
+    def build_from_entries(entries) do
+      max_x =
+        entries
+        |> Enum.flat_map(fn %{start: %{x: x1}, finish: %{x: x2}} -> [x1, x2] end)
+        |> Enum.max()
+
+      max_y =
+        entries
+        |> Enum.flat_map(fn %{start: %{y: y1}, finish: %{y: y2}} -> [y1, y2] end)
+        |> Enum.max()
+
+      grid = List.duplicate(List.duplicate(0, max_y + 1), max_x + 1)
+      %__MODULE__{grid: grid}
+    end
+
+    def mark_line(%{grid: grid}, %Entry{
+          start: %{x: start_x, y: start_y},
+          finish: %{x: finish_x, y: finish_y}
+        }) do
+      for x <- start_x..finish_x,
+          y <- start_y..finish_y,
+          reduce: grid do
+        acc -> update_in(acc, [Access.at(y), Access.at(x)], &(&1 + 1))
+      end
+    end
+
+    def sum_multiples(%{grid: grid}) do
+      grid
+      |> List.flatten()
+      |> Enum.reduce(0, fn
+        elem, acc when elem >= 2 -> acc + 1
+        _elem, acc -> acc
+      end)
+    end
+  end
+
   def part_one(input) do
     parsed_input =
       setup(input)
@@ -16,22 +55,14 @@ defmodule Aoc2021.Day05 do
         _ -> false
       end)
 
-    # require IEx
-    # IEx.pry()
-
-    Enum.map(parsed_input, fn entry ->
-      generate_list_coords(entry)
-    end)
+    base_grid = Grid.build_from_entries(parsed_input)
 
     parsed_input
-  end
-
-  defp generate_list_coords(%Entry{
-         start: %{x: start_x, y: start_y},
-         finish: %{x: end_x, y: end_y}
-       }) do
-    require IEx
-    IEx.pry()
+    |> Enum.reduce(base_grid, fn entry, grid ->
+      new_grid = Grid.mark_line(grid, entry)
+      %{grid | grid: new_grid}
+    end)
+    |> Grid.sum_multiples()
   end
 
   defp setup(input) do
@@ -41,7 +72,6 @@ defmodule Aoc2021.Day05 do
       [start, finish] =
         elem
         |> String.split(" -> ")
-        |> IO.inspect()
         |> Enum.map(fn point ->
           [x, y] = String.split(point, ",", trim: true)
           %Point{x: String.to_integer(x), y: String.to_integer(y)}
