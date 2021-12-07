@@ -27,4 +27,16 @@ defmodule Aoc2021.Day05Test do
       assert Day05.part_one(input) == 5167
     end
   end
+
+  describe "part two" do
+    test "sample input" do
+      assert Day05.part_two(@sample_input) == 12
+    end
+
+    test "unique input" do
+      {:ok, input} = File.read("inputs/day05.txt")
+
+      assert Day05.part_two(input) == 5167
+    end
+  end
 end
